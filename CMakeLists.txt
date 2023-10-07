@@ -137,7 +137,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	# Configure an application target to test the library
 	qt_add_executable(example main.cpp )
 	qt6_add_qml_module(example
-		URI  Example
+		URI  App
 		VERSION 1.0
 		QML_FILES
 		qml/window.qml
