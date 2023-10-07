@@ -148,6 +148,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	# Link the application target with the libraries
 	target_link_libraries(example PRIVATE Qt::Gui Qt::Qml Qt::Quick nftMonitor)
 
+	set_target_properties(example PROPERTIES
+		WIN32_EXECUTABLE ON
+		MACOSX_BUNDLE ON
+		)
+
 	# If building for browser copy files to wasm folder
 	if(EMSCRIPTEN)
 		add_custom_command(
