@@ -1,0 +1,54 @@
+html,body{
+	height:100%;
+	width:100%;
+	float:left;
+	min-height: 100%;
+	color: white;
+	font-family: 'Allerta Stencil';font-size: 2vw;
+	margin: 0;
+	padding:0;
+
+}
+a{
+	text-decoration: underline;
+	color: hotpink;
+}
+#qtspinner
+{
+	position:fixed;
+	width:50%;
+	height:50%;
+	bottom: 25%;
+	right: 25%;
+	display:block;
+	z-index: 1000
+}
+.qtscreen { width: 100%; height: 100%; }
+figure
+{
+	width:100%;
+	height:100%;
+}
+img
+{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	max-height: 70%;
+}
+center
+{
+	float: left;
+	width: 100%;
+	height: 100%;
+}
+footer
+{
+	background-color: #10141c;
+	float:left;
+	height:10%;
+	width:100%;
+	font-size: 1vw;
+	display: inherit;
+}
