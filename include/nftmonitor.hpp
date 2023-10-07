@@ -50,5 +50,7 @@ private:
     qiota::Client * rest_client;
     qiota::ClientMqtt* event_client;
     QUrl m_nodeAddr;
+    qiota::ResponseMqtt* resp;
+    qiota::Node_outputs* node_outputs_;
 
 };

@@ -18,29 +18,29 @@ include(FetchContent)
 # Get the library that check if a NFT exist on an address using the REST API of the nodes 
 # This will check if the library is installed first, if not download it from GitHub and compile it
 FetchContent_Declare(
-	qclient
-	GIT_REPOSITORY https://github.com/EddyTheCo/Qclient-IOTA.git
-	GIT_TAG v0.2.3
-	FIND_PACKAGE_ARGS 0.2 CONFIG
-	)
+    qclient
+    GIT_REPOSITORY https://github.com/EddyTheCo/Qclient-IOTA.git
+    GIT_TAG v0.2.3
+    FIND_PACKAGE_ARGS 0.2 CONFIG
+)
 FetchContent_MakeAvailable(qclient)
 
 # Get the library that notifies when a new nft is transferred to an address using the event API of the nodes 
 # https://wiki.iota.org/shimmer/tips/tips/TIP-0028/
 FetchContent_Declare(
-	qclientMQTT
-	GIT_REPOSITORY https://github.com/EddyTheCo/QclientMqtt-IOTA.git
-        GIT_TAG v0.2.3
-	FIND_PACKAGE_ARGS 0.2 CONFIG
-	)
+    qclientMQTT
+    GIT_REPOSITORY https://github.com/EddyTheCo/QclientMqtt-IOTA.git
+    GIT_TAG v0.2.3
+    FIND_PACKAGE_ARGS 0.2 CONFIG
+)
 FetchContent_MakeAvailable(qclientMQTT)
 # Get the library that takes care of encoding and decoding bech32 addresses
 FetchContent_Declare(
-	qbech32
-	GIT_REPOSITORY https://github.com/EddyTheCo/Qbech32.git
-	GIT_TAG v0.0.2
-	FIND_PACKAGE_ARGS 0.0 CONFIG
-	)
+    qbech32
+    GIT_REPOSITORY https://github.com/EddyTheCo/Qbech32.git
+    GIT_TAG v0.0.2
+    FIND_PACKAGE_ARGS 0.0 CONFIG
+)
 FetchContent_MakeAvailable(qbech32)
 
 
@@ -55,19 +55,19 @@ qt_standard_project_setup()
 # Creates a CMake target (a library in this case) that expose a custom QML type using C++(defined in the SOURCES) 
 # and also expose a custom QML type defined in the QML_FILES 
 qt6_add_qml_module(nftMonitor
-	URI  nftMonitor
-	VERSION 1.0
-	SOURCES
-	src/nftmonitor.cpp include/nftmonitor.hpp
-	OUTPUT_TARGETS out_targets_var
-	QML_FILES
-	qml/NFTMonitor.qml
-	RESOURCE_PREFIX
-	"/esterVtech.com/imports"
-	IMPORT_PATH ${QML_IMPORT_PATH}
-	OUTPUT_DIRECTORY
-	${CMAKE_CURRENT_BINARY_DIR}/nftMonitor
-	)
+    URI  nftMonitor
+    VERSION 1.0
+    SOURCES
+    src/nftmonitor.cpp include/nftmonitor.hpp
+    OUTPUT_TARGETS out_targets_var
+    QML_FILES
+    qml/NFTMonitor.qml
+    RESOURCE_PREFIX
+    "/esterVtech.com/imports"
+    IMPORT_PATH ${QML_IMPORT_PATH}
+    OUTPUT_DIRECTORY
+    ${CMAKE_CURRENT_BINARY_DIR}/nftMonitor
+)
 
 # When compiling shared library for Windows 
 # https://doc.qt.io/qt-6/sharedlibrary.html
@@ -84,57 +84,94 @@ target_link_libraries(nftMonitor PRIVATE qbech32 qclient qclientMQTT)
 
 # Include the headers with the exposed symbols of the library 
 target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-	"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor>")
-
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor>")
 
 # Install the library target and targets(out_targets_var) created by qt6_add_qml_module
-# Associate those targets to a CMake Export
+# Associate those targets to a CMake Export and certain component
 install(TARGETS nftMonitor ${out_targets_var}
-	EXPORT nftMonitorTargets
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	)
+    EXPORT nftMonitorTargets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT library
+)
 
-# Install public headers 
+# Install public headers and associate the headers to a component
+# in this way one can do find_package(nftMonitor REQUIRED COMPONENTS library CONFIG)
+# or install the library component only
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor
-	)
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor
+    COMPONENT library
+)
+
+# Configure an application target to test the library
+qt_add_executable(app main.cpp )
+qt6_add_qml_module(app
+    URI  App
+    VERSION 1.0
+    QML_FILES
+    qml/window.qml
+    RESOURCE_PREFIX
+    "/esterVtech.com/imports"
+)
+
+# Link the application target with the libraries
+target_link_libraries(app PRIVATE Qt::Gui Qt::Qml Qt::Quick nftMonitor)
+
+# Install the application target
+# Associate the  target to a CMake Export and certain component
+# Do not install the application by default
+install(TARGETS app
+    EXPORT nftMonitorTargets
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+    COMPONENT application
+    EXCLUDE_FROM_ALL
+)
+
+
 
 # Generates and installs a CMake file containing code to import the targets associated with the nftMonitorTargets EXPORT
 # from the installation tree into another project
 install(EXPORT nftMonitorTargets
-	FILE nftMonitorTargets.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nftMonitor
-	)
+    FILE nftMonitorTargets.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nftMonitor
+)
 
 # Create CMake Package and install it
 # This will allow to use CMake find_package to link to our library
 include(CMakePackageConfigHelpers)
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
-	"${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfig.cmake"
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nftMonitor
-	)
+    "${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nftMonitor
+)
 write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfigVersion.cmake"
-	VERSION ${VERSION}
-	COMPATIBILITY SameMajorVersion
-	)
+    "${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfigVersion.cmake"
+    VERSION 1.0
+    COMPATIBILITY SameMajorVersion
+)
 install(FILES
-	${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfig.cmake
-	${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfigVersion.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nftMonitor
-	)
+    ${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/nftMonitorConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nftMonitor
+)
 export(EXPORT nftMonitorTargets
-	FILE "${CMAKE_CURRENT_BINARY_DIR}/nftMonitorTargets.cmake"
-	)
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/nftMonitorTargets.cmake"
+)
 
 
 # Set some Cpack configuration variables
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-	set(CPACK_PACKAGE_CONTACT "estervtech")
-	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-v${SEMVER}-${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_VERSION}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
-	if(USE_THREADS)
-		set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-MThread")
-	endif(USE_THREADS)
-	include(CPack)
+    set(CPACK_PACKAGE_CONTACT "estervtech")
+    set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-v${SEMVER}-${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_VERSION}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
+    if(USE_THREADS)
+        set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-MThread")
+    endif(USE_THREADS)
+    include(CPack)
 endif()
 
+if(EMSCRIPTEN)
+    add_custom_command(
+        TARGET app
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy "${CMAKE_CURRENT_BINARY_DIR}/app.js" "${CMAKE_CURRENT_BINARY_DIR}/app.wasm" "${CMAKE_CURRENT_BINARY_DIR}/qtloader.js" "${CMAKE_CURRENT_SOURCE_DIR}/wasm"
+    )
+endif()
