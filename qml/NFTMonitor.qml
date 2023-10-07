@@ -7,20 +7,24 @@ Item
 {
     id:root
     property int attack:0;
-
+    property alias nodeAddr:monitor.nodeAddr
     CPPMonitor
     {
         id:monitor
         onIssuerChanged:
         {
             root.attack=monitor.attack
-            if(monitor.issuer==="0xqsert")
+            if(monitor.issuer==="0x000b22cdeed839e4df23def46f7c2e8d04d3b66aab30b2695c7e9cbf21e9ef93cb")
             {
                 root.attack=1000;
             }
+            console.log(monitor.issuer);
+            console.log(monitor.imgSource);
+            console.log(monitor.name);
+            console.log(monitor.attack);
         }
         address: addrText.text
-        nodeAddr: nodeText.text
+
     }
     ColumnLayout
     {
@@ -33,7 +37,15 @@ Item
             horizontalAlignment:Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide:Text.ElideRight
-            text:(monitor.name!=="")?monitor.name:"Player"
+            text:((monitor.name!=="")?monitor.name:qsTr("Player"))+"\n Attack:" + root.attack
+            color:"white"
+            background: Rectangle
+            {
+                color:"black"
+                border.width:1
+                border.color:"white"
+                radius:Math.min(width,height)*0.05
+            }
         }
 
         Image {
@@ -42,16 +54,7 @@ Item
             Layout.fillWidth: true
             Layout.margins: 20
             source: monitor.imgSource
-
-            Label
-            {
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                text:"Attack\n "+ root.attack
-                width:parent.width*0.2
-                height:parent.height*0.1
-                fontSizeMode:Text.Fit
-            }
+            fillMode: Image.PreserveAspectFit
         }
         TextField {
             id:addrText
@@ -59,13 +62,6 @@ Item
             Layout.maximumWidth: 300
             Layout.alignment: Qt.AlignHCenter
             placeholderText: qsTr("Enter the address")
-        }
-        TextField {
-            id:nodeText
-            Layout.fillWidth: true
-            Layout.maximumWidth: 300
-            Layout.alignment: Qt.AlignHCenter
-            placeholderText: qsTr("Enter the node URL")
         }
 
     }

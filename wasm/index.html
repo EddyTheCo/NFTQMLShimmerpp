@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<link href='https://fonts.googleapis.com/css?family=Allerta Stencil' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css?family=Ubuntu Condensed' rel='stylesheet'>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="style.css">
+
+		<title>Nft Game</title>
+	</head>
+	<body onload="init()">
+		<div id="qtrootDiv" style="float:left;width:100%;height:90%;"></div>
+		<footer>
+			<div class="fdiv" id="gitrepo" style="text-align:center;" >
+				<a style="display: contents; width:30px;" href="https://github.com/EddyTheCo/NftMinter" target="_blank"><img style="width:30px;" id="gitHublogo" src="img/gitHublogo.png"></img></a>
+				Developed by <a href="https://eddytheco.github.io/" target="_blank" >Eddy</a>
+			</div>
+		</footer>
+	<script type="text/javascript">
+        async function init()
+        {
+
+	const rootDiv = document.querySelector('#qtrootDiv');
+	
+		rootDiv.innerHTML += '<figure  id="qtspinner"> <center > <img id="logo" crossorigin="anonymous" src="img/esterlogo.png" ></img> <div id="qtstatus"></div> </center> </figure> <div class="qtscreen" id="screen" ></div>';
+	
+	const spinner = rootDiv.querySelector('#qtspinner');
+	const screen = rootDiv.querySelector('#screen');
+	const status = rootDiv.querySelector('#qtstatus');
+
+	const logo = spinner.querySelector('#logo');
+	logo.style.cssText = String(logo.style.cssText);
+            const showUi = (ui) => {
+                [spinner, screen].forEach(element => element.style.display = 'none');
+                if (screen === ui)
+                    screen.style.position = 'default';
+                ui.style.display = 'block';
+            }
+
+            try {
+                showUi(spinner);
+                status.innerHTML = 'Loading...';
+
+                const instance = await qtLoad({
+                    qt: {
+                        onLoaded: () => showUi(screen),
+                        onExit: exitData =>
+                        {
+                            status.innerHTML = 'Application exit';
+                            status.innerHTML +=
+                                exitData.code !== undefined ? ` with code ` : '';
+                            status.innerHTML +=
+                                exitData.text !== undefined ? ` ()` : '';
+                            showUi(spinner);
+                        },
+                        entryFunction: window.createQtAppInstance,
+                        containerElements: [screen],
+                        
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                console.error(e.stack);
+            }
+        }
+    </script>
+		<script src="example.js"></script>
+		<script type="text/javascript" src="qtloader.js"></script>
+	</body>
+</html>

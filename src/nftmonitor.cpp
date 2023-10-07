@@ -7,9 +7,11 @@
 using namespace qiota;
 
 CPPMonitor::CPPMonitor(QObject *parent):QObject(parent),rest_client(new Client(this)),
-    event_client(new ClientMqtt(this)),m_attack(0),m_nodeAddr("https://api.testnet.shimmer.network")
+    event_client(new ClientMqtt(this)),m_attack(0),m_nodeAddr("https://api.testnet.shimmer.network"),
+    resp(nullptr),node_outputs_(nullptr)
 {
-
+    rest_client->set_node_address(m_nodeAddr);
+    event_client->set_node_address(m_nodeAddr);
     connect(this,&CPPMonitor::nodeAddrChanged,this,[=](){
         if(m_nodeAddr.isValid())
         {
@@ -17,21 +19,17 @@ CPPMonitor::CPPMonitor(QObject *parent):QObject(parent),rest_client(new Client(t
             event_client->set_node_address(m_nodeAddr);
         }
     });
-    connect(this,&CPPMonitor::addressChanged,this,[=](){
-        restart();
-    });
-    restart();
+    connect(this,&CPPMonitor::addressChanged,this,&CPPMonitor::restart);
+    connect(rest_client,&qiota::Client::stateChanged,this,&CPPMonitor::restart);
 }
 void CPPMonitor::restart(void)
 {
-    static ResponseMqtt* resp=nullptr;
-    static Node_outputs* node_outputs_=nullptr;
 
-    if(!m_address.isNull()&&!m_nodeAddr.isEmpty())
+    if(!m_address.isNull()&&rest_client->state())
     {
         const auto addr_pair=qencoding::qbech32::Iota::decode(m_address);
 
-        if(addr_pair.second.size()&&rest_client->state())
+        if(addr_pair.second.size())
         {
             auto info=rest_client->get_api_core_v2_info();
             connect(info,&Node_info::finished,this,[=]( ){
@@ -50,7 +48,7 @@ void CPPMonitor::restart(void)
 
                     rest_client->get_outputs<qblocks::Output::NFT_typ>(node_outputs_,"address="+m_address);
 
-                    auto resp=event_client->get_subscription("outputs/unlock/address/"+m_address);
+                    resp=event_client->get_subscription("outputs/unlock/address/"+m_address);
                     connect(resp,&ResponseMqtt::returned,this,[=](auto data){
                         updateValues(Node_output(data));
                     });
@@ -68,7 +66,12 @@ void CPPMonitor::updateValues(qiota::Node_output out)
 
     if(out.output()->type()==qblocks::Output::NFT_typ)
     {
-        auto nft_output=std::static_pointer_cast<const qblocks::NFT_Output>(out.output());
+        auto nft_output=std::static_pointer_cast<qblocks::NFT_Output>(out.output());
+
+        if(nft_output->get_id()==qblocks::c_array(32,0))
+        {
+            nft_output->set_id(out.metadata().outputid_);
+        }
         auto NFTID=nft_output->get_id();
         auto buffer=QDataStream(&NFTID,QIODevice::ReadOnly);
         buffer.setByteOrder(QDataStream::LittleEndian);
@@ -116,7 +119,7 @@ void CPPMonitor::updateValues(qiota::Node_output out)
         auto IssuerFea=nft_output->get_immutable_feature_(qblocks::Feature::Issuer_typ);
         if(IssuerFea)
         {
-            auto m_issuer=std::static_pointer_cast<const qblocks::Issuer_Feature>(IssuerFea)
+            m_issuer=std::static_pointer_cast<const qblocks::Issuer_Feature>(IssuerFea)
                                 ->issuer()->addr().toHexString();
         }
         emit issuerChanged();
