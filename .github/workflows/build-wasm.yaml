@@ -13,4 +13,5 @@ jobs:
       id-token: write
     with:
       qtModules: 'qtwebsockets'
-      qtVersion: '6.6.0'  
+      qtVersion: '6.6.0' 
+      emsdkVersion: '3.1.37'  
