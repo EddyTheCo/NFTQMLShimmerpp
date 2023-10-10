@@ -69,18 +69,25 @@ qt6_add_qml_module(nftMonitor
 	${CMAKE_CURRENT_BINARY_DIR}/nftMonitor
 	)
 
+# Simple image to show NFTs from estervtech
+qt_add_resources(nftMonitor "nftMonitor.images"
+	PREFIX "/esterVtech.com/imports/nftMonitor"
+	OUTPUT_TARGETS out_targets_var2
+	FILES
+	"images/BestNFT.png"
+	)
 # When compiling shared library for Windows
 # https://doc.qt.io/qt-6/sharedlibrary.html
 target_compile_definitions(nftMonitor PRIVATE WINDOWS_OMONI)
 
-# link to our library target the different Qt libraries
+# link to our library target the different Qt libraries https://doc.qt.io/qt-6/qtgui-index.html
 target_link_libraries(nftMonitor PUBLIC Qt6::Gui Qt6::Quick)
 
 
 
 # link to our library target the different Shimmer++ libraries
-# Use Private because no symbol from the Shimmer++ libraries will be exposed in this library
-target_link_libraries(nftMonitor PRIVATE qbech32 qclient qclientMQTT)
+target_link_libraries(nftMonitor PUBLIC qclient qclientMQTT)
+target_link_libraries(nftMonitor PRIVATE qbech32)
 
 # Include the headers with the exposed symbols of the library
 target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -88,7 +95,7 @@ target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_S
 
 # Install the library target and targets(out_targets_var) created by qt6_add_qml_module
 # Associate those targets to a CMake Export and certain component
-install(TARGETS nftMonitor ${out_targets_var}
+install(TARGETS nftMonitor ${out_targets_var} ${out_targets_var2}
 	EXPORT nftMonitorTargets
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	COMPONENT library
@@ -101,7 +108,6 @@ install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor
 	COMPONENT library
 	)
-
 
 # Generates and installs a CMake file containing code to import the targets associated with the nftMonitorTargets EXPORT
 # from the installation tree into another project
