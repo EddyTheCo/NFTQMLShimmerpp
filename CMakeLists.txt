@@ -64,18 +64,12 @@ qt6_add_qml_module(nftMonitor
 	qml/NFTMonitor.qml
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
-	IMPORT_PATH ${QML_IMPORT_PATH}
+	RESOURCES
+	"images/BestNFT.png"
 	OUTPUT_DIRECTORY
 	${CMAKE_CURRENT_BINARY_DIR}/nftMonitor
 	)
 
-# Simple image to show NFTs from estervtech
-qt_add_resources(nftMonitor "nftMonitor.images"
-	PREFIX "/esterVtech.com/imports/nftMonitor"
-	OUTPUT_TARGETS out_targets_var2
-	FILES
-	"images/BestNFT.png"
-	)
 # When compiling shared library for Windows
 # https://doc.qt.io/qt-6/sharedlibrary.html
 target_compile_definitions(nftMonitor PRIVATE WINDOWS_OMONI)
@@ -95,7 +89,7 @@ target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_S
 
 # Install the library target and targets(out_targets_var) created by qt6_add_qml_module
 # Associate those targets to a CMake Export and certain component
-install(TARGETS nftMonitor ${out_targets_var} ${out_targets_var2}
+install(TARGETS nftMonitor ${out_targets_var} 
 	EXPORT nftMonitorTargets
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	COMPONENT library
