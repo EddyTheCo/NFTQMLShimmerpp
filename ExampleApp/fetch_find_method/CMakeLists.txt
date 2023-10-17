@@ -51,12 +51,3 @@ set_target_properties(example PROPERTIES
 	MACOSX_BUNDLE ON
 	)
 
-# If building for browser copy files to wasm folder
-if(EMSCRIPTEN)
-	add_custom_command(
-		TARGET example
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND}
-		ARGS -E copy "${CMAKE_CURRENT_BINARY_DIR}/example.js" "${CMAKE_CURRENT_BINARY_DIR}/example.wasm" "${CMAKE_CURRENT_BINARY_DIR}/qtloader.js" "${CMAKE_SOURCE_DIR}/wasm"
-		)
-endif()
