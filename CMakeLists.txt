@@ -134,7 +134,7 @@ export(EXPORT nftMonitorTargets
 # If configuring  only this project
 # then add a test application of the library
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-	add_subdirectory(ExampleApp/add_sub_method)
+	add_subdirectory(ExampleApp)
 	# Set some Cpack configuration variables
 	set(CPACK_PACKAGE_CONTACT "estervtech")
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-v${SEMVER}-${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_VERSION}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
