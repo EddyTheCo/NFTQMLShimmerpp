@@ -1,6 +1,6 @@
-# Example linking the nftMonitor library using FetchContent and find_package
+# Example linking the nftMonitor library using add_subdirectory()
 # set the minimum cmake to 3.24 to be able to use FIND_PACKAGE_ARGS
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.11)
 
 # set the CMake project properties
 project(exampleApp VERSION 1.0 DESCRIPTION "Example application using the QML module" LANGUAGES CXX)
@@ -23,25 +23,15 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick)
 qt_standard_project_setup()
 
 # Configure an application target to test the library
-qt_add_executable(example ../main.cpp )
+qt_add_executable(example main.cpp )
 qt6_add_qml_module(example
 	URI  App
 	VERSION 1.0
 	QML_FILES
-	../qml/window.qml
+	qml/window.qml
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
 	)
-include(FetchContent)
-# Get the library with the custom QML types
-# This will check if the library is installed first using find_package, if not, download it from  GitHub and compile it
-FetchContent_Declare(
-	nftMonitor
-	GIT_REPOSITORY https://github.com/EddyTheCo/NFTQMLShimmerpp.git
-	GIT_TAG v0.0.1
-	FIND_PACKAGE_ARGS CONFIG
-	)
-FetchContent_MakeAvailable(nftMonitor)
 
 # Link the application target with the libraries
 target_link_libraries(example PRIVATE Qt::Gui Qt::Qml Qt::Quick nftMonitor)
@@ -51,3 +41,12 @@ set_target_properties(example PROPERTIES
 	MACOSX_BUNDLE ON
 	)
 
+# If building for browser copy files to wasm folder
+if(EMSCRIPTEN)
+	add_custom_command(
+		TARGET example
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND}
+		ARGS -E copy "${CMAKE_CURRENT_BINARY_DIR}/example.js" "${CMAKE_CURRENT_BINARY_DIR}/example.wasm" "${CMAKE_CURRENT_BINARY_DIR}/qtloader.js" "${CMAKE_SOURCE_DIR}/wasm"
+		)
+endif()
