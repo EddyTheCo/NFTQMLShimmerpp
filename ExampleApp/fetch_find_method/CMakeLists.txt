@@ -32,7 +32,6 @@ qt6_add_qml_module(example
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
 	)
-
 include(FetchContent)
 # Get the library with the custom QML types
 # This will check if the library is installed first using find_package, if not, download it from  GitHub and compile it
@@ -40,7 +39,7 @@ FetchContent_Declare(
 	nftMonitor
 	GIT_REPOSITORY https://github.com/EddyTheCo/NFTQMLShimmerpp.git
 	GIT_TAG v0.0.1
-	FIND_PACKAGE_ARGS 0.0 CONFIG
+	FIND_PACKAGE_ARGS CONFIG
 	)
 FetchContent_MakeAvailable(nftMonitor)
 
