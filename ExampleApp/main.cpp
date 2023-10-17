@@ -1,9 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+
+// One needs to use a symbol from the QML library to force the linker to link the library
+// https://forum.qt.io/post/762513
+#include "nftmonitor.hpp"
+
 int main(int argc, char *argv[])
 {
-
+	auto foo=foonftMonitor::fooPrint(); //https://forum.qt.io/post/762513
 	//Creates a Gui application https://doc.qt.io/qt-6/qguiapplication.html#details
 	QGuiApplication app(argc, argv);
 

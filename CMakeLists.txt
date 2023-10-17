@@ -64,18 +64,12 @@ qt6_add_qml_module(nftMonitor
 	qml/NFTMonitor.qml
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
-	IMPORT_PATH ${QML_IMPORT_PATH}
+	RESOURCES
+	"images/BestNFT.png"
 	OUTPUT_DIRECTORY
 	${CMAKE_CURRENT_BINARY_DIR}/nftMonitor
 	)
 
-# Simple image to show NFTs from estervtech
-qt_add_resources(nftMonitor "nftMonitor.images"
-	PREFIX "/esterVtech.com/imports/nftMonitor"
-	OUTPUT_TARGETS out_targets_var2
-	FILES
-	"images/BestNFT.png"
-	)
 # When compiling shared library for Windows
 # https://doc.qt.io/qt-6/sharedlibrary.html
 target_compile_definitions(nftMonitor PRIVATE WINDOWS_OMONI)
@@ -95,7 +89,7 @@ target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_S
 
 # Install the library target and targets(out_targets_var) created by qt6_add_qml_module
 # Associate those targets to a CMake Export and certain component
-install(TARGETS nftMonitor ${out_targets_var} ${out_targets_var2}
+install(TARGETS nftMonitor ${out_targets_var} 
 	EXPORT nftMonitorTargets
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	COMPONENT library
@@ -140,34 +134,7 @@ export(EXPORT nftMonitorTargets
 # If configuring  only this project
 # then add a test application of the library
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-	# Configure an application target to test the library
-	qt_add_executable(example main.cpp )
-	qt6_add_qml_module(example
-		URI  App
-		VERSION 1.0
-		QML_FILES
-		qml/window.qml
-		RESOURCE_PREFIX
-		"/esterVtech.com/imports"
-		)
-
-	# Link the application target with the libraries
-	target_link_libraries(example PRIVATE Qt::Gui Qt::Qml Qt::Quick nftMonitor)
-
-	set_target_properties(example PROPERTIES
-		WIN32_EXECUTABLE ON
-		MACOSX_BUNDLE ON
-		)
-
-	# If building for browser copy files to wasm folder
-	if(EMSCRIPTEN)
-		add_custom_command(
-			TARGET example
-			POST_BUILD
-			COMMAND ${CMAKE_COMMAND}
-			ARGS -E copy "${CMAKE_CURRENT_BINARY_DIR}/example.js" "${CMAKE_CURRENT_BINARY_DIR}/example.wasm" "${CMAKE_CURRENT_BINARY_DIR}/qtloader.js" "${CMAKE_CURRENT_SOURCE_DIR}/wasm"
-			)
-	endif()
+	add_subdirectory(ExampleApp)
 	# Set some Cpack configuration variables
 	set(CPACK_PACKAGE_CONTACT "estervtech")
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-v${SEMVER}-${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_VERSION}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_CXX_COMPILER_ID}")
