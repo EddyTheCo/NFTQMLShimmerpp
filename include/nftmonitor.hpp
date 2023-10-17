@@ -20,7 +20,11 @@
 #define OMONI_EXPORT Q_DECL_IMPORT
 #endif
 
-
+//https://forum.qt.io/post/762513
+namespace foonftMonitor 
+{
+	QString fooPrint(void);
+};
 
 /*!
 * QML Type using the Shimmer++ libraries to show information about NFTs in certain address.

@@ -8,6 +8,15 @@
 #include <limits>
 using namespace qiota;
 
+// Just a foo function to call from the main app to force the linker to link to the backing target.
+// So we do not have to use or take care of the plugin target.
+namespace foonftMonitor
+{
+	QString fooPrint(void)
+	{
+		return "//https://forum.qt.io/post/762513";
+	}
+}
 
 /*
  * Constructor of the QML Type.
