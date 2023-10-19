@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-include(GNUInstallDirs)
 
 
 # Find Core and Gui Quick Qt6 components
@@ -31,10 +30,11 @@ qt6_add_qml_module(example
 	qml/window.qml
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
+	IMPORT_PATH ${CMAKE_BINARY_DIR}
 	)
 
 # Link the application target with the libraries
-target_link_libraries(example PRIVATE Qt::Gui Qt::Qml Qt::Quick nftMonitor)
+target_link_libraries(example PRIVATE Qt::Gui Qt::Qml Qt::Quick nftMonitor )
 
 set_target_properties(example PROPERTIES
 	WIN32_EXECUTABLE ON
@@ -43,6 +43,8 @@ set_target_properties(example PROPERTIES
 
 # If building for browser copy files to wasm folder
 if(EMSCRIPTEN)
+	#The STATIC QML modules also generate the static QML plugins if NO_PLUGIN is not specified. Targets that import such STATIC QML modules also need to explicitly link to corresponding QML plugins.
+	target_link_libraries(example PRIVATE nftMonitorplugin )
 	add_custom_command(
 		TARGET example
 		POST_BUILD

@@ -2,7 +2,7 @@ import QtQuick.Controls
 import QtQuick
 import QtQuick.Layouts
 
-import nftMonitor
+import NFTMonitor
 
 ApplicationWindow {
     visible: true
@@ -26,7 +26,7 @@ ApplicationWindow {
         {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            NFTMonitor
+            QMLMonitor
             {
                 id:playerA
                 Layout.fillHeight: true
@@ -52,7 +52,7 @@ ApplicationWindow {
                     }
                 }
             }
-            NFTMonitor
+            QMLMonitor
             {
                 id:playerB
                 Layout.fillHeight: true
