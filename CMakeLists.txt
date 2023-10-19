@@ -54,20 +54,21 @@ qt_standard_project_setup()
 
 # Creates a CMake target (a library in this case) that expose a custom QML type using C++(defined in the SOURCES)
 # and also expose a custom QML type defined in the QML_FILES
+
 qt6_add_qml_module(nftMonitor
-	URI  nftMonitor
+	URI NFTMonitor
 	VERSION 1.0
 	SOURCES
 	src/nftmonitor.cpp include/nftmonitor.hpp
 	OUTPUT_TARGETS out_targets_var
 	QML_FILES
-	qml/NFTMonitor.qml
+	qml/QMLMonitor.qml
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
 	RESOURCES
 	"images/BestNFT.png"
 	OUTPUT_DIRECTORY
-	${CMAKE_CURRENT_BINARY_DIR}/nftMonitor
+	${CMAKE_BINARY_DIR}/NFTMonitor
 	)
 
 # When compiling shared library for Windows
@@ -89,18 +90,19 @@ target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_S
 
 # Install the library target and targets(out_targets_var) created by qt6_add_qml_module
 # Associate those targets to a CMake Export and certain component
-install(TARGETS nftMonitor ${out_targets_var} 
+install(TARGETS nftMonitor ${out_targets_var}
 	EXPORT nftMonitorTargets
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	COMPONENT library
 	)
 
 # Install public headers and associate the headers to a component
-# in this way one can do find_package(nftMonitor REQUIRED COMPONENTS library CONFIG)
+# in this way one can do find_package(nftMonitor REQUIRED CONFIG)
 # or install the library component only
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor
-	COMPONENT library
+	)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/NFTMonitor/
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/QMLPlugins/NFTMonitor
 	)
 
 # Generates and installs a CMake file containing code to import the targets associated with the nftMonitorTargets EXPORT
@@ -143,4 +145,3 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	endif(USE_THREADS)
 	include(CPack)
 endif()
-
