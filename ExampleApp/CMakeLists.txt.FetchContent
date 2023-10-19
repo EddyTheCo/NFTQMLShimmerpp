@@ -31,6 +31,7 @@ qt6_add_qml_module(example
 	qml/window.qml
 	RESOURCE_PREFIX
 	"/esterVtech.com/imports"
+	IMPORT_PATH ${CMAKE_BINARY_DIR}
 	)
 include(FetchContent)
 # Get the library with the custom QML types
@@ -38,7 +39,7 @@ include(FetchContent)
 FetchContent_Declare(
 	nftMonitor
 	GIT_REPOSITORY https://github.com/EddyTheCo/NFTQMLShimmerpp.git
-	GIT_TAG v0.0.1
+	GIT_TAG v0.1.1
 	FIND_PACKAGE_ARGS CONFIG
 	)
 FetchContent_MakeAvailable(nftMonitor)
