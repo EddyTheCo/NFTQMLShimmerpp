@@ -88,9 +88,9 @@ target_link_libraries(nftMonitor PRIVATE qbech32)
 target_include_directories(nftMonitor PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor>")
 
-# Install the library target and targets(out_targets_var) created by qt6_add_qml_module
+# Install the library target(backing and plugin) and targets(out_targets_var) created by qt6_add_qml_module
 # Associate those targets to a CMake Export and certain component
-install(TARGETS nftMonitor ${out_targets_var}
+install(TARGETS nftMonitor nftMonitorplugin ${out_targets_var}
 	EXPORT nftMonitorTargets
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	)
