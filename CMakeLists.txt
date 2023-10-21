@@ -16,6 +16,8 @@ include(GNUInstallDirs)
 
 include(FetchContent)
 # Get the library that check if a NFT exist on an address using the REST API of the nodes
+# https://wiki.iota.org/tips/tips/TIP-0025/
+# https://wiki.iota.org/tips/tips/TIP-0026/
 # This will check if the library is installed first, if not download it from GitHub and compile it
 FetchContent_Declare(
 	qclient
@@ -95,12 +97,11 @@ install(TARGETS nftMonitor nftMonitorplugin ${out_targets_var}
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	)
 
-# Install public headers and associate the headers to a component
-# in this way one can do find_package(nftMonitor REQUIRED CONFIG)
-# or install the library component only
+# Install public headers
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/nftMonitor
 	)
+# Install the compiled plugin folder
 install(DIRECTORY ${CMAKE_BINARY_DIR}/NFTMonitor/
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/QMLPlugins/NFTMonitor
 	)
