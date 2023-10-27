@@ -4,7 +4,7 @@ The repo is used for demonstration purposes on how to define QML types using C++
 The custom type takes care of monitor the NFT outputs on certain address.
 
 ## How to reuse
-The CMake project on this repo define a target called `nftMonitor` that defines the `NFTMonitor` and `CPPMonitor` QML elements.
+The CMake project on this repo define a target called `nftMonitor` that defines the `QMLMonitor` and `CPPMonitor` QML elements.
 
 This QML types can be reused in your CMake  project by using CMake Packages. 
 
@@ -12,7 +12,7 @@ This QML types can be reused in your CMake  project by using CMake Packages.
 
 Like:
 ```
-find_package(nftMonitor REQUIRED COMPONENTS library CONFIG)
+find_package(nftMonitor REQUIRED CONFIG)
 ```
 
 * Using [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html)
@@ -27,9 +27,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nftMonitor)
 ```
 
-Then you need to link the backing target to your target like 
+Then you need to link the backing (and plugin) target to your target like 
 ```
-target_link_libraries(yourTarget PRIVATE nftMonitor)
+target_link_libraries(yourTarget PRIVATE nftMonitor 
+	 $<$<STREQUAL:$<TARGET_PROPERTY:nftMonitor,TYPE>,STATIC_LIBRARY>:nftMonitorplugin>
+)
 ```
 
 For the QML engine to find the module one needs to add the path of the module, in this case `/esterVtech.com/imports`.
