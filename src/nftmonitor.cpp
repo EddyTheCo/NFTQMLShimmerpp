@@ -174,10 +174,6 @@ void CPPMonitor::updateValues(qiota::Node_output out)
 			m_issuer=std::static_pointer_cast<const qblocks::Issuer_Feature>(IssuerFea)
 				->issuer()->addr().toHexString();
 		}
-		else
-		{
-			m_issuer="";
-		}
 		//emit the signal in order for QML side to know that the property of the element has changed.
 		emit issuerChanged();
 	}
